@@ -20,25 +20,31 @@ import static java.util.concurrent.Executors.*;
 /**
  * 该主方法还配置了jvvm参数
  * 死循环
- * -Xmx8m
- *-Xms8m
- *-Xmn1m
- *-Xss512k
- *-XX:+PrintGC
- *-XX:+PrintGCDetails
+ * -Xmx8m 最大堆内存
+ *-Xms8m 初始堆内存
+ *-Xmn1m 新生代内存
+ *-Xss512k 栈内存
+ *-XX:+PrintGC 打印gc信息
+ *-XX:+PrintGCDetails gc详情
+ *-XX:+HeapDumpOnOutOfMemoryError  OOM之时导出堆镜像到文件
+ *-XX:+HeapDumpPath  导出OOM文件的路径设置(与上一个参数需要同时给)
+ * -XX:OnOutOfMemoryError 在OOM时，执行一个脚本
+ *示例如下：-XX:OnOutOfMemoryError=D:/tools/jdk1.7_40/bin/printstack.bat %p在发生OOM之时，发送邮件或者重启应用等动作。
+ *
  */
 public class TestMain {
     public static void main(String[] args) throws InterruptedException {
 
-/*
-Thread.sleep(10000);
+      byte[] bytes=new byte[1024*1024*7];
+
+/*//Thread.sleep(10000);
         String str="2";
         while (true){
             str+=str;
-        }
-*/
+        }*/
 
-      /**
+/*
+      *//**
          * 手动创建线程池
          * execute()方法实际上是Executor中声明的方法，在ThreadPoolExecutor进行了具体的实现，
          * 这个方法是ThreadPoolExecutor的核心方法，
@@ -47,7 +53,7 @@ Thread.sleep(10000);
          * 在ThreadPoolExecutor中并没有对其进行重写，这个方法也是用来向线程池提交任务的，但是它和execute()方法不同，它能够返回任务执行的结果，去看submit()方法的实现，
          *会发现它实际上还是调用的execute()方法，只不过它利用了Future来获取任务执行结果。
          *submit()方法中参数可以是Callable类型也可以是Runnable类型，而execute()方法参数只能是Runnable类型。
-         */
+         *//*
         ThreadPoolExecutor threadPoolExecutor = ThreadPool.getThreadPool();
         for (int i = 0; i < 5; i++) {
             MyRunable myRunable = new MyRunable(i);
@@ -57,7 +63,7 @@ Thread.sleep(10000);
         threadPoolExecutor.shutdown();
 
 
-        /**
+        *//**
          * (固定数目线程的线程池)
          * newFixedThreadPool线程池特点
          *核心线程数和最大线程数大小一样
@@ -75,7 +81,7 @@ Thread.sleep(10000);
          *FixedThreadPool 适用于处理CPU密集型的任务，
          *确保CPU在长期被工作线程使用的情况下，
          *尽可能的少的分配线程，即适用执行长期的任务。
-         */
+         *//*
         ExecutorService fixedThreadPoolService = newFixedThreadPool(2);
 
         for (int i=0;i<10000;i++){
@@ -85,7 +91,7 @@ Thread.sleep(10000);
 
 
 
-        /**
+        *//**
          * (可缓存线程的线程池)
          * 核心线程数为0
          *最大线程数为Integer.MAX_VALUE
@@ -102,13 +108,13 @@ Thread.sleep(10000);
          *
          *使用场景
          *用于并发执行大量短期的小任务
-         */
+         *//*
         ExecutorService cachedThreadPoolService = newCachedThreadPool();
         for (int i=0 ;i<5;i++){
             cachedThreadPoolService.submit(new MyRunable(2));
         }
 
-        /**
+        *//**
          * (单线程的线程池)
          * 核心线程数为1
          *最大线程数也为1
@@ -123,7 +129,7 @@ Thread.sleep(10000);
          *4、当前的唯一线程，从队列取任务，执行完一个，再继续取，一个人（一条线程）夜以继日地干活。
          *
          * 适用于串行执行任务的场景，一个任务一个任务地执行。
-         */
+         *//*
         ExecutorService singleThreadExecutorService = newSingleThreadExecutor();
         for (int i=0;i<5;i++){
             singleThreadExecutorService.submit(new MyRunable(3));
@@ -131,7 +137,7 @@ Thread.sleep(10000);
 
 
 
-        /**
+        *//**
          * (定时及周期执行的线程池)
          * 最大线程数为Integer.MAX_VALUE
          *阻塞队列是DelayedWorkQueue
@@ -146,12 +152,12 @@ Thread.sleep(10000);
          *3、线程从 DelayQueue 中获取 time 大于等于当前时间的task
          *4、执行完后修改这个 task 的 time 为下次被执行的时间
          *5、这个 task 放回DelayQueue队列中
-         */
+         *//*
         //
         ScheduledExecutorService scheduledExecutorService = newScheduledThreadPool(1);
 
         scheduledExecutorService.scheduleWithFixedDelay(new MyRunable(4),1,10, TimeUnit.SECONDS);
-        scheduledExecutorService.shutdownNow();
+        scheduledExecutorService.shutdownNow();*/
 
     }
 }
