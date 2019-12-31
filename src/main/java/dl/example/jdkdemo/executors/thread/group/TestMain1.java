@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
  *@Version 1.0
  */
 @Slf4j
-public class TestMain {
+public class TestMain1 {
     public static void main(String[] args) throws InterruptedException {
 
         ThreadGroup threadGroup=new ThreadGroup("dl");

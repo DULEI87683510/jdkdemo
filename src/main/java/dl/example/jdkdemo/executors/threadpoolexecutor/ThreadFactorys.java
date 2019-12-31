@@ -1,4 +1,4 @@
-package dl.example.jdkdemo.executors.ThreadPoolExecutor;/**
+package dl.example.jdkdemo.executors.threadpoolexecutor;/**
  * @ClassName ThreadFactorys
  * @Description TODO
  * @Author DL
