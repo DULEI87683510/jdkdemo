@@ -1,11 +1,10 @@
 package dl.example.jdkdemo.executors.threadpoolexecutor;
 
 
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.lang.management.ThreadMXBean;
+import java.util.concurrent.*;
 
 import static java.util.concurrent.Executors.*;
 
@@ -21,21 +20,20 @@ import static java.util.concurrent.Executors.*;
  * 该主方法还配置了jvvm参数
  * 死循环
  * -Xmx8m 最大堆内存
- *-Xms8m 初始堆内存
- *-Xmn1m 新生代内存
- *-Xss512k 栈内存
- *-XX:+PrintGC 打印gc信息
- *-XX:+PrintGCDetails gc详情
- *-XX:+HeapDumpOnOutOfMemoryError  OOM之时导出堆镜像到文件
- *-XX:+HeapDumpPath  导出OOM文件的路径设置(与上一个参数需要同时给)
+ * -Xms8m 初始堆内存
+ * -Xmn1m 新生代内存
+ * -Xss512k 栈内存
+ * -XX:+PrintGC 打印gc信息
+ * -XX:+PrintGCDetails gc详情
+ * -XX:+HeapDumpOnOutOfMemoryError  OOM之时导出堆镜像到文件
+ * -XX:+HeapDumpPath  导出OOM文件的路径设置(与上一个参数需要同时给)
  * -XX:OnOutOfMemoryError 在OOM时，执行一个脚本
- *示例如下：-XX:OnOutOfMemoryError=D:/tools/jdk1.7_40/bin/printstack.bat %p在发生OOM之时，发送邮件或者重启应用等动作。
- *
+ * 示例如下：-XX:OnOutOfMemoryError=D:/tools/jdk1.7_40/bin/printstack.bat %p在发生OOM之时，发送邮件或者重启应用等动作。
  */
 public class TestMain {
     public static void main(String[] args) throws InterruptedException {
 
-      byte[] bytes=new byte[1024*1024*7];
+        byte[] bytes = new byte[1024 * 1024 * 7];
 
 /*//Thread.sleep(10000);
         String str="2";
@@ -43,8 +41,8 @@ public class TestMain {
             str+=str;
         }*/
 
-/*
-      *//**
+        /*
+         *//**
          * 手动创建线程池
          * execute()方法实际上是Executor中声明的方法，在ThreadPoolExecutor进行了具体的实现，
          * 这个方法是ThreadPoolExecutor的核心方法，
@@ -159,5 +157,26 @@ public class TestMain {
         scheduledExecutorService.scheduleWithFixedDelay(new MyRunable(4),1,10, TimeUnit.SECONDS);
         scheduledExecutorService.shutdownNow();*/
 
+
+        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(10,Integer.MAX_VALUE,1000,TimeUnit.MILLISECONDS,new ArrayBlockingQueue<>(10),defaultThreadFactory(),new ThreadPoolExecutor.DiscardPolicy());
+        RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
+        String jvmName = runtimeBean.getName();
+        System.out.println("JVM Name = " + jvmName);
+        long pid = Long.valueOf(jvmName.split("@")[0]);
+        System.out.println("JVM PID  = " + pid);
+        ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+        for (int i = 0; i < 10000; i++) {
+            threadPool.execute(() -> {
+                System.out.println("当前线程总数为：" + bean.getThreadCount());
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+
+        TimeUnit.SECONDS.sleep(10);
+        System.out.println("线程总数为 = " + bean.getThreadCount());
     }
 }

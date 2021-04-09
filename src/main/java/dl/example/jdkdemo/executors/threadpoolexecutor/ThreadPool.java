@@ -44,7 +44,7 @@ public class ThreadPool {
              *threadFactory： 用于设置创建线程的工厂，可以给创建的线程设置有意义的名字，可方便排查问题。
              * handler： 线程池的饱和策略事件，主要有四种类型。
              */
-            executor = new ThreadPoolExecutor(5, 10, 200, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(5), new ThreadFactorys(), new Reject());
+            executor = new ThreadPoolExecutor(5, 10, 200, TimeUnit.SECONDS, new ArrayBlockingQueue<>(5), new ThreadFactorys(), new Reject());
         }
         return executor;
     }
